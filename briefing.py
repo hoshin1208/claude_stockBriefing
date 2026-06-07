@@ -284,7 +284,10 @@ _생성 시각: {TODAY_KST.strftime("%Y-%m-%d %H:%M")} KST_
 
 
 def build_kakao_msg(prices: list, news_map: dict) -> str:
-    lines = [f"📈 {TODAY_STR} 포트폴리오 브리핑\n"]
+    lines = [f"📈 {TODAY_STR} 포트폴리오 브리핑", ""]
+
+    # 주가 요약
+    lines.append("[ 주가 ]")
     for p in prices:
         if p.get("price"):
             rate = p.get("change_rate", 0) or 0
@@ -293,14 +296,19 @@ def build_kakao_msg(prices: list, news_map: dict) -> str:
         else:
             lines.append(f"{p['name']}: 조회 실패")
 
-    # 뉴스 1건씩 추가 (글자수 제한 고려)
+    # 종목별 뉴스 전체 (3개씩)
     lines.append("")
+    lines.append("[ 뉴스 ]")
     for name, items in news_map.items():
-        if items:
-            lines.append(f"[{name}] {items[0]['title'][:30]}...")
+        lines.append(f"\n▶ {name}")
+        if not items:
+            lines.append("  오늘 뉴스 없음")
+        for it in items:
+            pub = f" ({it['pub']})" if it.get("pub") else ""
+            lines.append(f"  • {it['title']}{pub}")
 
     msg = "\n".join(lines)
-    return msg[:200]
+    return msg[:9000]
 
 
 # ════════════════════════════════════════════════════════════════════
@@ -322,7 +330,7 @@ def send_kakao_memo(text: str):
         data={
             "template_object": json.dumps({
                 "object_type": "text",
-                "text":        text[:200],
+                "text":        text[:9000],
                 "link":        {"web_url": "", "mobile_web_url": ""},
             })
         },
