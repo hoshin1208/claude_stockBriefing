@@ -77,7 +77,7 @@ curl -X POST https://kauth.kakao.com/oauth/token \
 
 1. [console.anthropic.com](https://console.anthropic.com) 접속 > 최소 $5부터 구매해야함.
 2. **API Keys** → **Create Key** → 키 복사
-
+> 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
 ---
 
 ### Step 5 — GitHub Secrets 등록
@@ -91,7 +91,7 @@ curl -X POST https://kauth.kakao.com/oauth/token \
 | `KAKAO_REST_API_KEY` | Step 2의 REST API 키            |
 | `ANTHROPIC_API_KEY`  | Step 4의 Claude API 키          |
 | `GH_PAT`             | GitHub → Settings → Developer settings → Personal access tokens → Tokens(classic) → `repo` 권한으로 생성 |
-
+> stockBriefing_token : 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
 ---
 
 ### Step 6 — 수동 테스트 실행
@@ -112,7 +112,7 @@ curl -X POST https://kauth.kakao.com/oauth/token \
 ```
 
 매일 아침 7시에 자동 실행됩니다. ✅
-
+> 마지막 인자는 요일 : 0-5는 일~금. 1-5는 월~금.
 ---
 
 ## 종목 변경 방법
