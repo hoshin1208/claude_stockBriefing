@@ -40,8 +40,9 @@ GitHub Actions (매일 07:00 KST)
    - 앱 이름: `StockBriefing` (자유롭게)
 3. 생성된 앱 클릭 → **앱 키** 탭 → **REST API 키** 복사 (32자리)
 4. 좌측 메뉴 **카카오 로그인** → 활성화 ON
-5. **카카오 로그인** → **동의항목** → `카카오톡 메시지 전송` 체크
-6. **카카오 로그인** → **Redirect URI** 추가: `https://localhost`
+   - REST API Key 수정 > 클라이언트 시크릿, 카카오 로그인과 비즈니스 인증 모두 OFF 확인.
+6. **카카오 로그인** → **동의항목** → `카카오톡 메시지 전송` 체크
+7. **카카오 로그인** → **Redirect URI** 추가: `https://localhost`
 
 ---
 
@@ -74,7 +75,7 @@ curl -X POST https://kauth.kakao.com/oauth/token \
 
 ### Step 4 — Anthropic API 키 발급
 
-1. [console.anthropic.com](https://console.anthropic.com) 접속
+1. [console.anthropic.com](https://console.anthropic.com) 접속 > 최소 $5부터 구매해야함.
 2. **API Keys** → **Create Key** → 키 복사
 
 ---
