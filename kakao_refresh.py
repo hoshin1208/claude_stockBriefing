@@ -43,8 +43,8 @@ def get_public_key():
         f"https://api.github.com/repos/{GH_REPO}/actions/secrets/public-key",
         headers={"Authorization": f"Bearer {GH_TOKEN}"},
     )
+    print(f"  공개키 API 응답: {resp.status_code} {resp.text}")  # ← 이 줄 추가
     return resp.json()
-
 
 def encrypt_secret(public_key_value: str, secret_value: str) -> str:
     pk  = public.PublicKey(public_key_value.encode(), encoding.Base64Encoder)
