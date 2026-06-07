@@ -8,12 +8,17 @@ GitHub Actions Secret을 자동 업데이트하는 스크립트.
 """
 
 import os
+import re
+import sys
+import json
 import requests
+from base64 import b64encode
+from nacl import encoding, public
 
-KAKAO_REST_API_KEY   = os.environ["KAKAO_REST_API_KEY"]
-KAKAO_REFRESH_TOKEN  = os.environ["KAKAO_REFRESH_TOKEN"]
-GH_TOKEN             = os.environ["GH_TOKEN"]          # repo secret 업데이트용
-GH_REPO              = os.environ["GH_REPO"]            # "username/repo-name"
+KAKAO_REST_API_KEY  = os.environ["KAKAO_REST_API_KEY"]
+KAKAO_REFRESH_TOKEN = os.environ["KAKAO_REFRESH_TOKEN"]
+GH_TOKEN            = os.environ["GH_PAT"]
+GH_REPO             = os.environ["GH_REPO"]
 
 
 def refresh_kakao_token():
@@ -27,42 +32,47 @@ def refresh_kakao_token():
     )
     data = resp.json()
     if "access_token" not in data:
-        raise RuntimeError(f"토큰 갱신 실패: {data}")
+        print(f"❌ 토큰 갱신 실패: {data}")
+        sys.exit(1)
+    print("✅ 카카오 액세스 토큰 갱신 성공")
     return data["access_token"], data.get("refresh_token")
 
 
-def update_github_secret(secret_name: str, value: str):
-    """GitHub REST API로 Actions Secret 업데이트"""
-    # 공개 키 가져오기
-    pk_resp = requests.get(
+def get_public_key():
+    resp = requests.get(
         f"https://api.github.com/repos/{GH_REPO}/actions/secrets/public-key",
         headers={"Authorization": f"Bearer {GH_TOKEN}"},
     )
-    pk_data = pk_resp.json()
+    return resp.json()
 
-    # nacl로 암호화
-    from base64 import b64encode
-    from nacl import encoding, public
 
-    pk      = public.PublicKey(pk_data["key"].encode(), encoding.Base64Encoder)
-    box     = public.SealedBox(pk)
-    enc_val = b64encode(box.encrypt(value.encode())).decode()
+def encrypt_secret(public_key_value: str, secret_value: str) -> str:
+    pk  = public.PublicKey(public_key_value.encode(), encoding.Base64Encoder)
+    box = public.SealedBox(pk)
+    return b64encode(box.encrypt(secret_value.encode())).decode()
 
-    # Secret 업데이트
-    requests.put(
+
+def update_github_secret(secret_name: str, secret_value: str, pk_data: dict):
+    encrypted = encrypt_secret(pk_data["key"], secret_value)
+    resp = requests.put(
         f"https://api.github.com/repos/{GH_REPO}/actions/secrets/{secret_name}",
         headers={"Authorization": f"Bearer {GH_TOKEN}"},
-        json={"encrypted_value": enc_val, "key_id": pk_data["key_id"]},
+        json={"encrypted_value": encrypted, "key_id": pk_data["key_id"]},
     )
-    print(f"  ✅ GitHub Secret '{secret_name}' 업데이트 완료")
+    if resp.status_code in (201, 204):
+        print(f"  ✅ GitHub Secret '{secret_name}' 업데이트 완료")
+    else:
+        print(f"  ❌ GitHub Secret '{secret_name}' 업데이트 실패: {resp.text}")
 
 
 if __name__ == "__main__":
-    print("카카오 토큰 갱신 중...")
     new_access, new_refresh = refresh_kakao_token()
+    pk_data = get_public_key()
 
-    update_github_secret("KAKAO_ACCESS_TOKEN", new_access)
+    update_github_secret("KAKAO_ACCESS_TOKEN", new_access, pk_data)
+
     if new_refresh:
-        update_github_secret("KAKAO_REFRESH_TOKEN", new_refresh)
-
-    print("완료!")
+        update_github_secret("KAKAO_REFRESH_TOKEN", new_refresh, pk_data)
+        print("  ✅ 리프레시 토큰도 갱신됨")
+    else:
+        print("  ℹ️ 리프레시 토큰 변동 없음")
