@@ -1,0 +1,27 @@
+name: 🔑 Kakao Token Refresh
+
+on:
+  schedule:
+    - cron: "0 */5 * * *"  # 5시간마다 갱신 (액세스 토큰 유효기간 6시간)
+  workflow_dispatch:        # 수동 실행 가능
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install requests pynacl
+
+      - name: Refresh Kakao token
+        env:
+          KAKAO_REST_API_KEY:  ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+          GH_PAT:              ${{ secrets.GH_PAT }}
+          GH_REPO:             ${{ github.repository }}
+        run: python kakao_refresh.py
