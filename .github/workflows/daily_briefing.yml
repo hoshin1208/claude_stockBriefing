@@ -3,6 +3,7 @@ name: 📈 Daily Stock Briefing
 on:
   schedule:
     - cron: "0 22 * * 0-5" # last param- everyday: *. weekend excep: 1-5
+    - cron: "20 22 * * 0-5"
   workflow_dispatch:
 
 jobs:
