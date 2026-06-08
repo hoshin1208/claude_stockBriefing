@@ -351,6 +351,13 @@ def main():
     print(f"  일일 주식 브리핑 — {TODAY_STR} 07:00 KST")
     print(f"{'='*50}\n")
 
+    # ── 중복 실행 방지 ───────────────────────────────────────────────
+    out_dir  = "briefings"
+    out_path = f"{out_dir}/{TODAY_STR}.md"
+    if os.path.exists(out_path):
+        print(f"⏭️  오늘({TODAY_STR}) 브리핑이 이미 존재합니다. 중복 실행 건너뜀.")
+        return
+
     prices   = collect_prices()
     news_map = collect_news()
 
