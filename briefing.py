@@ -52,7 +52,12 @@ def get_recent_biz_day(offset=0):
 def fetch_price_pykrx(krx_code: str):
     """pykrx로 당일 종가 + 전일 대비 조회 (로그인 불필요)"""
     try:
+        import warnings
+        warnings.filterwarnings("ignore")
+        import logging
+        logging.disable(logging.CRITICAL)
         from pykrx import stock
+        logging.disable(logging.NOTSET)
 
         today = get_recent_biz_day(0)
         prev  = get_recent_biz_day(1)
@@ -251,7 +256,11 @@ def build_markdown(prices: list, news_map: dict) -> str:
                 },
                 timeout=30,
             )
-            text   = resp.json()["content"][0]["text"]
+            resp_json = resp.json()
+            if "content" not in resp_json:
+                print(f"  [Claude API 응답 오류] {resp_json}")
+                raise ValueError(f"No content in response: {resp_json}")
+            text   = resp_json["content"][0]["text"]
             text   = re.sub(r"```json|```", "", text).strip()
             parsed = json.loads(text)
             key_line = parsed.get("key_line", key_line)
