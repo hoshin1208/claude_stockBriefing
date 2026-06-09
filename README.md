@@ -92,7 +92,7 @@ curl -X POST https://kauth.kakao.com/oauth/token \
 | `KAKAO_REST_API_KEY` | Step 2의 REST API 키            |
 | `ANTHROPIC_API_KEY`  | Step 4의 Claude API 키          |
 | `GH_PAT`             | GitHub → Settings → Developer settings → Personal access tokens → Tokens(classic) → `repo` 권한으로 생성 |
-> 토큰 생성 시 repo 권한에 체크해야 함.
+> 토큰 생성 시 repo 권한에 체크해야 함 > workflow 도 체크함.
 > stockBriefing_token : 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
 ---
 
