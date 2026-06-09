@@ -78,7 +78,7 @@ curl -X POST https://kauth.kakao.com/oauth/token \
 
 1. [console.anthropic.com](https://console.anthropic.com) 접속 > 최소 $5부터 구매해야함.
 2. **API Keys** → **Create Key** → 키 복사
-> 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
+> sk-ant-api03... : 여기도 노출 시키지 않음.
 ---
 
 ### Step 5 — GitHub Secrets 등록
@@ -93,7 +93,7 @@ curl -X POST https://kauth.kakao.com/oauth/token \
 | `ANTHROPIC_API_KEY`  | Step 4의 Claude API 키          |
 | `GH_PAT`             | GitHub → Settings → Developer settings → Personal access tokens → Tokens(classic) → `repo` 권한으로 생성 |
 > 토큰 생성 시 repo 권한에 체크해야 함 > workflow 도 체크함.
-> stockBriefing_token : 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
+> stockBriefing_token 은 노출되면 삭제되는 듯 해서 여기 표시 안함.
 ---
 
 ### Step 6 — 수동 테스트 실행
