@@ -3,7 +3,7 @@ name: 📈 Daily Stock Briefing
 on:
   schedule:
     - cron: "0 22 * * 0-5" 
-    - cron: "30 23 * * 0-5"
+    - cron: "0 23 * * 0-5"
   workflow_dispatch:
 
 jobs:
